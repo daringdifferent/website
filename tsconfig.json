@@ -1,13 +1,18 @@
 {
   "compilerOptions": {
+    "target": "ES6",
     "module": "ESNext",
-    "target": "ESNext",
     "moduleResolution": "node",
+    "strict": true,
     "esModuleInterop": true,
-    "strict": true
+    "outDir": "dist"
   },
-  "ts-node": {
-    "esm": true
-  },
-  "include": ["server/server.ts"]
+  "include": [
+    "server/**/*.ts",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/api/create-checkout-session.ts"  // Exclude if not using Next.js
+  ]
 }

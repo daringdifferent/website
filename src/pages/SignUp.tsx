@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
-import { Mail } from 'lucide-react';
+import { Mail, Check, CreditCard } from 'lucide-react';
 import { supabase } from '../lib/supabase'; // adjust the path as needed
 
 // A simple Google icon component
@@ -26,6 +26,8 @@ const GoogleIcon: React.FC = () => (
     />
   </svg>
 );
+
+const SUBSCRIPTION_LINK = 'https://buy.stripe.com/test_14kg2P25PdAS2885kl';
 
 const SignUp: React.FC = () => {
   // Read query parameter to determine the plan ("free" or "premium")
@@ -80,8 +82,8 @@ const SignUp: React.FC = () => {
     if (error) {
       setMessage(error.message);
     } else {
-      // After successful sign up, proceed to create a Stripe checkout session.
-      await handlePaidSubscription();
+      // After successful sign up, proceed to checkout by redirecting to the subscription link.
+      handlePaidSubscription();
     }
   };
 
@@ -94,22 +96,12 @@ const SignUp: React.FC = () => {
     // Supabase will redirect on success; after return, you might prompt them to proceed to checkout.
   };
 
-  // Handler to create a Stripe checkout session for premium subscription
+  // Handler to redirect to Stripe checkout for premium subscription
   const handlePaidSubscription = async () => {
     try {
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: 'premium' }),
-      });
-      const { sessionUrl, error } = await response.json();
-      if (error || !sessionUrl) {
-        setMessage('Unable to create checkout session.');
-      } else {
-        window.location.href = sessionUrl;
-      }
+      window.location.href = SUBSCRIPTION_LINK;
     } catch (err) {
-      setMessage('An error occurred while creating the checkout session.');
+      setMessage('An error occurred while redirecting to checkout.');
     }
   };
 
