@@ -269,7 +269,7 @@ const PlayerControls: React.FC<{
   );
 };
 
-// Enhanced Comments Component
+// Enhanced Comments Component with Enter to Send functionality
 const Comments: React.FC<{ episodeId: string }> = ({ episodeId }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState<string>('');
@@ -278,6 +278,7 @@ const Comments: React.FC<{ episodeId: string }> = ({ episodeId }) => {
   const [anonymousName, setAnonymousName] = useState<string>('');
   const [submitting, setSubmitting] = useState<boolean>(false);
   const commentsContainerRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     let name = localStorage.getItem('anonymousName');
@@ -290,19 +291,26 @@ const Comments: React.FC<{ episodeId: string }> = ({ episodeId }) => {
 
   const fetchComments = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('comments')
-      .select('*')
-      .eq('episode_id', episodeId)
-      .order('created_at', { ascending: false });
-    if (error) {
-      console.error('Error fetching comments:', error);
-      setErrorMsg('Failed to load comments.');
-    } else {
-      setComments(data);
-      setErrorMsg('');
+    try {
+      const { data, error } = await supabase
+        .from('comments')
+        .select('*')
+        .eq('episode_id', episodeId)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching comments:', error);
+        setErrorMsg('Failed to load comments.');
+      } else {
+        setComments(data || []);
+        setErrorMsg('');
+      }
+    } catch (err) {
+      console.error('Error in fetchComments:', err);
+      setErrorMsg('Failed to load comments. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -310,27 +318,71 @@ const Comments: React.FC<{ episodeId: string }> = ({ episodeId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [episodeId]);
 
-  const handleAddComment = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleAddComment = async (e?: FormEvent) => {
+    if (e) e.preventDefault();
+    
     if (!newComment.trim()) return;
+    if (submitting) return;
+    
     setSubmitting(true);
-    const user_id = anonymousName;
-    const { error } = await supabase
-      .from('comments')
-      .insert([{ episode_id: episodeId, user_id, content: newComment }]);
-    if (error) {
-      console.error('Error adding comment:', error);
-      setErrorMsg('Unable to post comment.');
-    } else {
-      setNewComment('');
-      setErrorMsg('');
-      await fetchComments();
-      // Scroll to top of comments after adding a new one
-      if (commentsContainerRef.current) {
-        commentsContainerRef.current.scrollTop = 0;
+    
+    try {
+      // Create a timestamp for the comment
+      const now = new Date().toISOString();
+      const user_id = anonymousName;
+      
+      // First try to insert the comment
+      const { error, data } = await supabase
+        .from('comments')
+        .insert([{ 
+          episode_id: episodeId, 
+          user_id, 
+          content: newComment.trim(),
+          created_at: now 
+        }])
+        .select();
+      
+      if (error) {
+        console.error('Error adding comment:', error);
+        setErrorMsg('Unable to post comment. Please try again.');
+      } else {
+        // Clear the input and error message
+        setNewComment('');
+        setErrorMsg('');
+        
+        // Update the local comments instead of refetching
+        // This makes the UI more responsive
+        if (data && data.length > 0) {
+          setComments(prevComments => [data[0], ...prevComments]);
+        } else {
+          // If we didn't get the data back from the insert, refetch
+          await fetchComments();
+        }
+        
+        // Scroll to top of comments
+        if (commentsContainerRef.current) {
+          commentsContainerRef.current.scrollTop = 0;
+        }
+        
+        // Focus back on the textarea
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+        }
       }
+    } catch (err) {
+      console.error('Error in handleAddComment:', err);
+      setErrorMsg('Something went wrong. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
+  };
+  
+  // Handle Enter key to send comment (but allow Shift+Enter for new lines)
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault(); // Prevent default to avoid newline
+      handleAddComment();
+    }
   };
 
   return (
@@ -398,7 +450,7 @@ const Comments: React.FC<{ episodeId: string }> = ({ episodeId }) => {
                         })}
                       </p>
                     </div>
-                    <p className="text-white/90">{comment.content}</p>
+                    <p className="text-white/90 whitespace-pre-line">{comment.content}</p>
                   </div>
                 </div>
               </motion.div>
@@ -416,10 +468,12 @@ const Comments: React.FC<{ episodeId: string }> = ({ episodeId }) => {
       <form onSubmit={handleAddComment} className="mt-auto">
         <div className="relative">
           <textarea
+            ref={textareaRef}
             className="w-full p-4 pr-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl focus:outline-none focus:border-[#FF9E1B] transition-colors text-white placeholder:text-white/50"
-            placeholder="Add a comment..."
+            placeholder="Add a comment... (Press Enter to send)"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
+            onKeyDown={handleKeyDown}
             rows={3}
           />
           <div className="absolute right-3 bottom-3">
@@ -472,37 +526,43 @@ const VideoPlayer: React.FC = () => {
   const smoothScrollProgress = useSpring(scrollYProgress, { damping: 20, stiffness: 100 });
 
   const fetchEpisodes = async () => {
-    // Check if we have an episode from location state
-    const locationEpisode = location.state?.episode;
-    
-    // Fetch all episodes
-    const { data, error } = await supabase
-      .from('podcast_episodes')
-      .select('*')
-      .order('published_at', { ascending: false });
+    try {
+      setLoading(true);
+      // Check if we have an episode from location state
+      const locationEpisode = location.state?.episode;
       
-    if (error) {
-      console.error('Error fetching episodes:', error);
-    } else if (data && data.length > 0) {
-      // Process the episodes to add any missing properties
-      const processedData = data.map(episode => ({
-        ...episode,
-        duration: episode.duration || '45 mins',
-        rating: episode.rating || (4 + Math.random()).toFixed(1),
-        comments_count: episode.comments_count || Math.floor(Math.random() * 50) + 5,
-        category: episode.category || ["Inspiration", "Disability Awareness", "Personal Growth"][Math.floor(Math.random() * 3)]
-      }));
-      
-      setEpisodes(processedData);
-      
-      // Set active episode from location state or first episode
-      if (locationEpisode) {
-        setActiveEpisode(locationEpisode);
-      } else {
-        setActiveEpisode(processedData[0]);
+      // Fetch all episodes
+      const { data, error } = await supabase
+        .from('podcast_episodes')
+        .select('*')
+        .order('published_at', { ascending: false });
+        
+      if (error) {
+        console.error('Error fetching episodes:', error);
+      } else if (data && data.length > 0) {
+        // Process the episodes to add any missing properties
+        const processedData = data.map(episode => ({
+          ...episode,
+          duration: episode.duration || '45 mins',
+          rating: episode.rating || (4 + Math.random()).toFixed(1),
+          comments_count: episode.comments_count || Math.floor(Math.random() * 50) + 5,
+          category: episode.category || ["Inspiration", "Disability Awareness", "Personal Growth"][Math.floor(Math.random() * 3)]
+        }));
+        
+        setEpisodes(processedData);
+        
+        // Set active episode from location state or first episode
+        if (locationEpisode) {
+          setActiveEpisode(locationEpisode);
+        } else {
+          setActiveEpisode(processedData[0]);
+        }
       }
+    } catch (err) {
+      console.error('Error in fetchEpisodes:', err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -520,7 +580,8 @@ const VideoPlayer: React.FC = () => {
 
   // Toggle like count for the active episode with optimistic UI updates.
   const toggleLike = async () => {
-    if (!activeEpisode) return;
+    if (!activeEpisode || likeUpdating) return;
+    
     const currentlyLiked = liked;
     const currentLikes = activeEpisode.likes || 0;
     const newLikes = currentlyLiked ? currentLikes - 1 : currentLikes + 1;
@@ -534,40 +595,53 @@ const VideoPlayer: React.FC = () => {
     setLiked(!currentlyLiked);
 
     setLikeUpdating(true);
-    const { error } = await supabase
-      .from('podcast_episodes')
-      .update({ likes: newLikes })
-      .eq('id', activeEpisode.id)
-      .single();
-    if (error) {
-      console.error('Error updating like:', error);
-      // Rollback optimistic update if needed
+    try {
+      const { error } = await supabase
+        .from('podcast_episodes')
+        .update({ likes: newLikes })
+        .eq('id', activeEpisode.id)
+        .single();
+        
+      if (error) {
+        console.error('Error updating like:', error);
+        // Rollback optimistic update if needed
+        setActiveEpisode({ ...activeEpisode, likes: currentLikes });
+        setEpisodes((prev) =>
+          prev.map((ep) => (ep.id === activeEpisode.id ? { ...ep, likes: currentLikes } : ep))
+        );
+        localStorage.setItem(`liked_${activeEpisode.id}`, currentlyLiked.toString());
+        setLiked(currentlyLiked);
+      }
+    } catch (err) {
+      console.error('Error in toggleLike:', err);
+      // Rollback on error
       setActiveEpisode({ ...activeEpisode, likes: currentLikes });
       setEpisodes((prev) =>
         prev.map((ep) => (ep.id === activeEpisode.id ? { ...ep, likes: currentLikes } : ep))
       );
       localStorage.setItem(`liked_${activeEpisode.id}`, currentlyLiked.toString());
       setLiked(currentlyLiked);
+    } finally {
+      setLikeUpdating(false);
     }
-    setLikeUpdating(false);
   };
 
   const handleShare = async () => {
     if (!activeEpisode) return;
     const shareUrl = window.location.href;
-    if (navigator.share) {
-      try {
+    try {
+      if (navigator.share) {
         await navigator.share({
           title: activeEpisode.title,
           text: activeEpisode.description,
           url: shareUrl,
         });
-      } catch (error) {
-        console.error('Error sharing:', error);
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        alert('Link copied to clipboard');
       }
-    } else {
-      navigator.clipboard.writeText(shareUrl);
-      alert('Link copied to clipboard');
+    } catch (error) {
+      console.error('Error sharing:', error);
     }
   };
   
@@ -853,21 +927,7 @@ const VideoPlayer: React.FC = () => {
                     <Share2 className="w-5 h-5" />
                   </motion.button>
                   
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:text-white transition-colors"
-                  >
-                    <Download className="w-5 h-5" />
-                  </motion.button>
-                  
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:text-white transition-colors"
-                  >
-                    <Bookmark className="w-5 h-5" />
-                  </motion.button>
+            
                 </div>
               </div>
               

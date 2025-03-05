@@ -218,18 +218,37 @@ const Home = () => {
   
   // Mailing list subscription state
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   
+  // Details for contact
+  const [lastName, setLastName] = useState('')
+  const [firstName, setFirstName]=useState('')
+  const [message, setMessage] = useState('')
+  const [contactSent, setContactSent] = useState(false);
+
   // Episodes from Supabase
   const [episodes, setEpisodes] = useState([]);
   const [episodesLoading, setEpisodesLoading] = useState(true);
 
-  // Load transition effect
-  useEffect(() => {
-    // Simulating loading time for the typing animation
-    setTimeout(() => {
+
+   // Load transition effect - MODIFIED SECTION
+   useEffect(() => {
+    // Check if user has already visited the site
+    const hasVisited = localStorage.getItem('hasVisitedDaringDifferent');
+    
+    if (hasVisited) {
+      // Skip loading animation if user has already visited
       setLoading(false);
-    }, 3800);
+    } else {
+      // For first-time visitors, show animation then set the flag
+      setTimeout(() => {
+        setLoading(false);
+        // Set flag in localStorage to remember this user has visited
+        localStorage.setItem('hasVisitedDaringDifferent', 'true');
+      }, 5200);
+    }
+    
     
     // Fetch episodes from Supabase on mount
     const fetchEpisodes = async () => {
@@ -256,16 +275,37 @@ const Home = () => {
     // Insert the email into the "mailing_list" table in Supabase
     const { error } = await supabase
       .from('mailing_list')
-      .insert([{ email }]);
+      .insert([{ email,name }]);
     if (error) {
       console.error('Error adding email to mailing list:', error);
       // Optionally, handle the error (e.g., show an error message to the user)
     } else {
       setSubscribed(true);
       setEmail('');
+      setName('');
       setTimeout(() => setSubscribed(false), 3000);
     }
   };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    const { error } = await supabase
+      .from('contact_messages')
+      .insert([{ first_name: firstName, last_name: lastName, email, message }]);
+    if (error) {
+      console.error('Error sending message:', error);
+      // Optionally, display an error to the user
+    } else {
+      // Clear the input fields
+      setFirstName('');
+      setLastName('');
+      setEmail('');
+      setMessage('');
+      setTimeout(() => setContactSent(false), 3000)
+    }
+  };
+  
+  
 
   // Testimonials carousel logic
   const testimonials = [
@@ -468,6 +508,7 @@ const Home = () => {
     );
   }
 
+  
   // Main home content after loading
   return (
     <div className="relative min-h-screen flex flex-col bg-[#F7F9FC] overflow-hidden">
@@ -649,16 +690,18 @@ const Home = () => {
                     ))}
                   </div>
                   <div className="text-white/80 text-sm">
-                    <span className="font-bold text-white">0+</span> monthly listeners
+                    <span className="font-bold text-white">5,000+</span> monthly listeners
                   </div>
                 </div>
                 
                 <div className="flex items-center text-white/80 text-sm">
                   <Star className="w-5 h-5 text-[#FF9E1B] mr-1" />
-                  <span className="font-bold text-white">0 </span> ratings
+                  <span className="font-bold text-white">4.9</span> ratings
                 </div>
                 
-               
+                <div className="px-3 py-1 bg-[#00B2A9]/20 backdrop-blur-md rounded-full text-[#00B2A9] text-sm">
+                  New episodes weekly
+                </div>
               </motion.div>
             </motion.div>
 
@@ -791,11 +834,6 @@ const Home = () => {
       {/* 2. FEATURED EPISODES SECTION WITH DIAGONAL LAYOUT */}
       <motion.section
         className="py-32 relative overflow-hidden"
-        style={{ opacity: experienceOpacity, scale: experienceScale }}
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
       >
         {/* Diagonal background sections */}
         <div className="absolute inset-0 -skew-y-3 bg-white/50 -translate-y-32 z-0" />
@@ -836,7 +874,7 @@ const Home = () => {
                 initial={{ width: 0 }}
                 whileInView={{ width: '100%' }}
                 viewport={{ once: true }}
-                transition={{ delay: 0.5, duration: 0.0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
               />
             </h2>
             <p className="text-xl text-[#0A2240]/70 max-w-2xl mx-auto mt-4">
@@ -864,7 +902,7 @@ const Home = () => {
                 <motion.div
                   key={episode.id}
                   variants={fadeInUp}
-                  whileHover={{ y: 0, scale: 1.02 }}
+                  whileHover={{ y: -10, scale: 1.02 }}
                   className="relative group"
                 >
                   {/* Card with glass morphism */}
@@ -1244,10 +1282,27 @@ const Home = () => {
                       hover: { scale: 1.1 }
                     }}
                   />
-                 
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="relative px-8 py-4 font-bold text-[#0A2240] bg-[#FF9E1B] rounded-full
+                              flex items-center gap-2 shadow-lg transform transition-all z-10"
+                  >
+                    <Play className="w-5 h-5" />
+                    <span>Watch Full Trailer</span>
+                  </motion.button>
                 </motion.div>
                 
-              
+                <motion.button
+                  whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(255,255,255,0.2)" }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-8 py-4 font-bold text-white border-2 border-white/30 rounded-full
+                            flex items-center gap-2 backdrop-blur-sm bg-white/5
+                            hover:bg-white/10 transform transition-all hover:border-white/60"
+                >
+                  <span>Share Trailer</span>
+                  <Share2 className="w-5 h-5" />
+                </motion.button>
               </motion.div>
             </motion.div>
           </div>
@@ -1260,7 +1315,7 @@ const Home = () => {
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.0 }}
+        transition={{ duration: 0.8 }}
       >
         {/* Subtle pattern background */}
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/diagonal-noise.png')] opacity-5" />
@@ -1286,12 +1341,12 @@ const Home = () => {
                 transition={{ duration: 0.5 }}
               >
                 <Sparkles className="w-4 h-4 inline mr-2" />
-                On this website
+                What We Offer
               </motion.span>
             </div>
             
             <h2 className="text-4xl md:text-5xl font-bold text-[#0A2240] mb-4 relative inline-block">
-              You'll find here
+              Discover Our Services
               <motion.div 
                 className="absolute -bottom-2 left-0 w-full h-2 bg-[#FF9E1B] rounded-full"
                 initial={{ width: 0 }}
@@ -1774,7 +1829,9 @@ const Home = () => {
                           <input
                             type="text"
                             id="name"
-                            placeholder="Jane Doe"
+                            placeholder="Stefan Danquah"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                             className="w-full px-4 py-3 rounded-lg bg-white/20 backdrop-blur-sm 
                                      border-2 border-white/20 focus:border-[#FF9E1B]
                                      focus:outline-none text-white placeholder:text-white/50"
@@ -1876,7 +1933,7 @@ const Home = () => {
           </motion.div>
 
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 gap-8"
             variants={staggerContainer}
             initial="initial"
             whileInView="animate"
@@ -1899,14 +1956,7 @@ const Home = () => {
                 gradient: "linear-gradient(135deg, #00B2A9 0%, #3FD5CC 100%)",
                 delay: 0.2,
               },
-              {
-                icon: <MapPin className="w-10 h-10 text-white" />,
-                title: "Address",
-                text: "123 Inspiring Lane\nEmpower City, EC 78910",
-                action: "Get directions",
-                gradient: "linear-gradient(135deg, #0A2240 0%, #1A3A5A 100%)",
-                delay: 0.3,
-              }
+              
             ].map((item, index) => (
               <motion.div 
                 key={index}
@@ -1973,7 +2023,7 @@ const Home = () => {
                     </motion.button>
                     
                     {/* Decorative dot pattern */}
-                    <div className="absolute top-4 left-4 grid grid-cols-3 gap-1 opacity-30">
+                    <div className="absolute top-4 left-4 grid grid-cols-2 gap-1 opacity-30">
                       {Array.from({ length: 9 }).map((_, i) => (
                         <div key={i} className="w-1 h-1 rounded-full bg-white" />
                       ))}
@@ -1999,7 +2049,7 @@ const Home = () => {
                   Have a question or want to collaborate? Fill out the form and we'll get back to you as soon as possible.
                 </p>
                 
-                <form className="space-y-4">
+                <form onSubmit={handleSendMessage} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-[#0A2240]/70 mb-1">
@@ -2007,6 +2057,8 @@ const Home = () => {
                       </label>
                       <input 
                         type="text" 
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
                         className="w-full px-4 py-2 rounded-lg bg-[#F7F9FC] border border-gray-200 focus:outline-none focus:border-[#00B2A9]"
                       />
                     </div>
@@ -2016,6 +2068,8 @@ const Home = () => {
                       </label>
                       <input 
                         type="text" 
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
                         className="w-full px-4 py-2 rounded-lg bg-[#F7F9FC] border border-gray-200 focus:outline-none focus:border-[#00B2A9]"
                       />
                     </div>
@@ -2027,6 +2081,8 @@ const Home = () => {
                     </label>
                     <input 
                       type="email" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       className="w-full px-4 py-2 rounded-lg bg-[#F7F9FC] border border-gray-200 focus:outline-none focus:border-[#00B2A9]"
                     />
                   </div>
@@ -2037,12 +2093,14 @@ const Home = () => {
                     </label>
                     <textarea 
                       rows="4" 
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
                       className="w-full px-4 py-2 rounded-lg bg-[#F7F9FC] border border-gray-200 focus:outline-none focus:border-[#00B2A9]"
                     ></textarea>
                   </div>
                   
                   <motion.button
-                    type="button"
+                    type="submit"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className="px-6 py-3 bg-[#0A2240] text-white rounded-lg font-semibold
@@ -2050,6 +2108,16 @@ const Home = () => {
                   >
                     Send Message
                   </motion.button>
+                  {contactSent && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-4 text-[#FF9E1B] text-sm font-medium"
+                    >
+                      Your message has been sent successfully!
+                    </motion.div>
+                  )}
+
                 </form>
               </div>
               
@@ -2057,24 +2125,11 @@ const Home = () => {
                 {/* Placeholder for map - in a real implementation you would use an actual map component */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[#0A2240]/5 to-[#00B2A9]/5" />
                 <div className="h-full flex flex-col items-center justify-center p-6">
-                  <div className="w-20 h-20 bg-white rounded-full shadow-lg flex items-center justify-center mb-4">
-                    <MapPin className="w-10 h-10 text-[#0A2240]" />
-                  </div>
-                  <h3 className="text-xl font-bold text-[#0A2240] mb-2">Find Us</h3>
-                  <p className="text-[#0A2240]/70 text-center">
-                    123 Inspiring Lane<br />
-                    Empower City, EC 78910<br />
-                    Australia
-                  </p>
-                  
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="mt-6 px-4 py-2 bg-white text-[#0A2240] rounded-lg font-medium shadow-md border border-gray-100
-                              hover:bg-[#0A2240] hover:text-white transition-colors"
-                  >
-                    Get Directions
-                  </motion.button>
+                <img 
+                    src="https://img.freepik.com/free-photo/portrait-smiley-student-wheelchair_23-2148844656.jpg" 
+                    alt="Female student in a wheelchair smiling" 
+                    className="w-full h-full object-cover"
+    />
                 </div>
               </div>
             </div>
@@ -2198,8 +2253,8 @@ const Home = () => {
                   ))}
                 </ul>
               </div>
-            
               
+             
               {/* Newsletter */}
               <div className="md:col-span-3">
                 <h3 className="text-lg font-bold mb-6 text-[#FF9E1B]">Newsletter</h3>

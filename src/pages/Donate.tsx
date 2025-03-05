@@ -379,11 +379,7 @@ const Donate = () => {
       {/* ENHANCED DONATION FORM SECTION */}
       <motion.section 
         className="py-32 relative overflow-hidden"
-        style={{ opacity: formOpacity, scale: formScale }}
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
+        
       >
         {/* Background decoration */}
         <div className="absolute inset-0 bg-white" />

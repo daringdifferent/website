@@ -644,17 +644,6 @@ const Podcast: React.FC = () => {
                     </motion.button>
                     
                     <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="px-6 py-3 border border-[#0A2240]/20 text-[#0A2240] rounded-full
-                                flex items-center gap-2 hover:bg-[#0A2240]/5
-                                transform transition-all"
-                    >
-                      <Download className="w-5 h-5" />
-                      <span>Download</span>
-                    </motion.button>
-                    
-                    <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       className="w-10 h-10 rounded-full flex items-center justify-center

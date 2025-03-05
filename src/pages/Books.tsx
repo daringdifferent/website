@@ -482,11 +482,8 @@ const Books: React.FC = () => {
       {latestBook && (
         <motion.section 
           className="py-32 relative overflow-hidden"
-          style={{ opacity: featuredOpacity, scale: featuredScale }}
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          
+          
         >
           {/* Background decoration */}
           <div className="absolute inset-0 bg-white" />
@@ -541,11 +538,7 @@ const Books: React.FC = () => {
               {/* Book Cover Column */}
               <motion.div
                 className="lg:col-span-5 relative perspective-[1000px]"
-                variants={fadeInRight}
-                initial="initial"
-                whileInView="animate"
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
+                
               >
                 {/* Floating abstract shapes */}
                 <motion.div 
