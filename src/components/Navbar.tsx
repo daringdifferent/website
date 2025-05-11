@@ -311,25 +311,6 @@ const Navbar = () => {
                 'Daring Different'}
             </motion.div>
 
-            {/* Auth indicator on mobile */}
-            {user && (
-              <Link
-                to="/profile"
-                className="mr-2 h-8 w-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center overflow-hidden cursor-pointer"
-              >
-                {user.user_metadata?.avatar_url ? (
-                  <img
-                    src={user.user_metadata.avatar_url}
-                    alt="User avatar"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <span className="text-[#FF9E1B] font-medium">
-                    {user.email?.charAt(0).toUpperCase()}
-                  </span>
-                )}
-              </Link>
-            )}
 
             {/* HAMBURGER MENU RIGHT */}
             <motion.button
