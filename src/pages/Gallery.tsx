@@ -676,21 +676,6 @@ const Gallery = () => {
                       <p className="text-[#0A2240] text-sm font-medium line-clamp-2">
                         {item.alt_text}
                       </p>
-
-                      <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center gap-1 text-[#0A2240]/60 text-xs">
-                          <Heart className="w-3 h-3 text-[#F15A5A]" />
-                          <span>{item.likes || 0}</span>
-                        </div>
-
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="w-6 h-6 rounded-full flex items-center justify-center text-[#0A2240]/60 hover:bg-[#0A2240]/5 transition-colors"
-                        >
-                          <Share2 className="w-3.5 h-3.5" />
-                        </motion.button>
-                      </div>
                     </div>
                   </motion.div>
                 </motion.div>
