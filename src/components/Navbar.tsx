@@ -166,7 +166,7 @@ const Navbar = () => {
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
                 <img
-                  src="https://drive.google.com/thumbnail?id=1F5-60YjmLJzaJEMJYcl-A6BiQ4bU-oWh&sz=w1000"
+                  src="https://drive.google.com/thumbnail?id=1ckCamYVuXks6h2GXo081N6qiyTxHBemu&sz=w1000"
                   alt="Daring Different Logo"
                   className="h-12 w-12 object-contain"
                 />
@@ -293,7 +293,7 @@ const Navbar = () => {
                 whileTap={{ scale: 0.95 }}
               >
                 <img
-                  src="https://drive.google.com/thumbnail?id=1F5-60YjmLJzaJEMJYcl-A6BiQ4bU-oWh&sz=w1000"
+                  src="https://drive.google.com/thumbnail?id=1ckCamYVuXks6h2GXo081N6qiyTxHBemu&sz=w1000"
                   alt="Daring Different Logo"
                   className="h-10 w-10 object-contain"
                 />
