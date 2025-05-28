@@ -313,7 +313,7 @@ const Home = () => {
       name: 'Stefan Danquah',
       role: 'Podcast Listener',
       quote:
-        '"Listening to Ciara podcast has opened my eyes to new perspectives. Her authenticity and warmth shine through every episode. I find myself eagerly awaiting each new release!"',
+        '"Listening to Ciara has opened my eyes to new perspectives. Her authenticity and warmth shine through every episode. I find myself eagerly awaiting each new release!"',
       image:
         'https://images.unsplash.com/photo-1570158268183-d296b2892211?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     },
@@ -321,7 +321,7 @@ const Home = () => {
       name: 'Ruthie Bomochie Armah',
       role: 'Podcast Listener',
       quote:
-        '"Ciara courage to speak up for disability awareness is truly inspiring. I always look forward to her next conversation. The way she navigates complex topics with sensitivity and insight is remarkable."',
+        '"Ciara demonstrates courage in speaking up for disability awareness. I always look forward to her next conversation. The way she navigates complex topics with sensitivity and insight is remarkable."',
       image:
         'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     }
