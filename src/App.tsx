@@ -1,33 +1,39 @@
-import ComingSoong from "./components/comingSoon.jsx";
+import ComingSoon from "./components/ComingSoon";
 
 export default function App() {
-  return <ComingSoong />;
+  return <ComingSoon />;
 }
 
 // // App.tsx
-// import React from 'react';
-// import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+// import React from "react";
+// import {
+//   BrowserRouter as Router,
+//   Routes,
+//   Route,
+//   useLocation,
+//   Navigate,
+// } from "react-router-dom";
 
 // // Import auth provider and protected route
-// import { AuthProvider } from './lib/AuthContext';
-// import ProtectedRoute from './components/ProtectedRoutes';
+// import { AuthProvider } from "./lib/AuthContext";
+// import ProtectedRoute from "./components/ProtectedRoutes";
 
 // // Import components and pages
-// import Navbar from './components/Navbar';
-// import Home from './pages/Home';
-// import About from './pages/About';
-// import Books from './pages/Books';
-// import Podcast from './pages/Podcast';
-// import Subscribe from './pages/Subscribe';
-// import SignUp from './pages/SignUp';
-// import SignIn from './pages/SignIn';
-// import UpdatePassword from './pages/UpdatePassword';
-// import Profile from './pages/Profile';
-// import AuthCallback from './pages/AuthCallback';
-// import VideoPlayerPage from './pages/VideoPlayer';
-// import Gallery from './pages/Gallery';
-// import BookCiara from './pages/BookCiara';
-// import Donate from './pages/Donate';
+// import Navbar from "./components/Navbar";
+// import Home from "./pages/Home";
+// import About from "./pages/About";
+// import Books from "./pages/Books";
+// import Podcast from "./pages/Podcast";
+// import Subscribe from "./pages/Subscribe";
+// import SignUp from "./pages/SignUp";
+// import SignIn from "./pages/SignIn";
+// import UpdatePassword from "./pages/UpdatePassword";
+// import Profile from "./pages/Profile";
+// import AuthCallback from "./pages/AuthCallback";
+// import VideoPlayerPage from "./pages/VideoPlayer";
+// import Gallery from "./pages/Gallery";
+// import BookCiara from "./pages/BookCiara";
+// import Donate from "./pages/Donate";
 
 // const AppRoutes: React.FC = () => {
 //   const location = useLocation();
