@@ -1,9 +1,12 @@
+body{
+  background: rgb(147, 147, 147);
+}
+
 .coming-soon-container {
   height: 100vh; /* Full screen height */
   width: 100%;
-background-image: url('/images/img.jpg');
-
-  background-size: cover;
+  background-image: url('/images/img.jpg');
+  background-size:auto;
   background-position: center;
   background-repeat: no-repeat;
   display: flex;
