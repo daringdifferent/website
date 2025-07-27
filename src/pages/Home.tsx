@@ -1,5 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useScroll,
+  useTransform,
+  useSpring,
+  useMotionValue,
+} from "framer-motion";
 import {
   ArrowRight,
   ChevronDown,
@@ -22,11 +29,11 @@ import {
   Sparkles,
   Music,
   Radio,
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
 // Import your Supabase client
-import { supabase } from '../lib/supabase'; // adjust the path as needed
+import { supabase } from "../lib/supabase"; // adjust the path as needed
 
 // TikTokIcon Component
 const TikTokIcon = ({ color = "#000000" }) => {
@@ -45,28 +52,28 @@ const TikTokIcon = ({ color = "#000000" }) => {
 
 // Hubtel-inspired color palette with expanded options
 const colors = {
-  primary: '#0A2240',      // Navy Blue
-  primaryDark: '#061830',  // Darker Navy
-  primaryLight: '#1A3A5A', // Lighter Navy
-  secondary: '#FF9E1B',    // Orange
-  secondaryDark: '#E08000', // Darker Orange
-  secondaryLight: '#FFBE5C', // Lighter Orange
-  accent: '#00B2A9',       // Teal
-  accentDark: '#008C84',   // Darker Teal
-  accentLight: '#3FD5CC',  // Lighter Teal
-  highlight: '#F15A5A',    // Coral Red
-  white: '#FFFFFF',
-  light: '#F7F9FC',
-  gray: '#E1E5EB',
-  dark: '#062040',
+  primary: "#0A2240", // Navy Blue
+  primaryDark: "#061830", // Darker Navy
+  primaryLight: "#1A3A5A", // Lighter Navy
+  secondary: "#FF9E1B", // Orange
+  secondaryDark: "#E08000", // Darker Orange
+  secondaryLight: "#FFBE5C", // Lighter Orange
+  accent: "#00B2A9", // Teal
+  accentDark: "#008C84", // Darker Teal
+  accentLight: "#3FD5CC", // Lighter Teal
+  highlight: "#F15A5A", // Coral Red
+  white: "#FFFFFF",
+  light: "#F7F9FC",
+  gray: "#E1E5EB",
+  dark: "#062040",
   gradient: {
-    primary: 'linear-gradient(135deg, #0A2240 0%, #1A3A5A 100%)',
-    secondary: 'linear-gradient(135deg, #FF9E1B 0%, #FFBE5C 100%)',
-    accent: 'linear-gradient(135deg, #00B2A9 0%, #3FD5CC 100%)',
-    vibrant: 'linear-gradient(135deg, #FF9E1B 0%, #00B2A9 100%)',
-    cool: 'linear-gradient(135deg, #0A2240 0%, #00B2A9 100%)',
-    hot: 'linear-gradient(135deg, #0A2240 0%, #FF9E1B 100%)',
-  }
+    primary: "linear-gradient(135deg, #0A2240 0%, #1A3A5A 100%)",
+    secondary: "linear-gradient(135deg, #FF9E1B 0%, #FFBE5C 100%)",
+    accent: "linear-gradient(135deg, #00B2A9 0%, #3FD5CC 100%)",
+    vibrant: "linear-gradient(135deg, #FF9E1B 0%, #00B2A9 100%)",
+    cool: "linear-gradient(135deg, #0A2240 0%, #26c3bbff 100%)",
+    hot: "linear-gradient(135deg, #0A2240 0%, #FF9E1B 100%)",
+  },
 };
 
 // Advanced animation variants
@@ -179,7 +186,12 @@ const ParticleShape = ({ className }) => {
     <motion.div
       className={className}
       style={{ y, x }}
-      transition={{ duration: 20, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}
+      transition={{
+        duration: 20,
+        ease: "easeInOut",
+        repeat: Infinity,
+        repeatType: "reverse",
+      }}
     />
   );
 };
@@ -208,7 +220,10 @@ const FloatingIcon = ({ icon, delay = 0, scale = 1 }) => {
 const Home = () => {
   // Scroll animation values
   const { scrollYProgress } = useScroll();
-  const smoothScrollProgress = useSpring(scrollYProgress, { damping: 20, stiffness: 100 });
+  const smoothScrollProgress = useSpring(scrollYProgress, {
+    damping: 20,
+    stiffness: 100,
+  });
 
   // Loading state for initial animation
   const [loading, setLoading] = useState(true);
@@ -217,25 +232,24 @@ const Home = () => {
   const [[page, direction], setPage] = useState([0, 0]);
 
   // Mailing list subscription state
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
   // Details for contact
-  const [lastName, setLastName] = useState('')
-  const [firstName, setFirstName] = useState('')
-  const [message, setMessage] = useState('')
+  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [message, setMessage] = useState("");
   const [contactSent, setContactSent] = useState(false);
 
   // Episodes from Supabase
   const [episodes, setEpisodes] = useState([]);
   const [episodesLoading, setEpisodesLoading] = useState(true);
 
-
   // Load transition effect - MODIFIED SECTION
   useEffect(() => {
     // Check if user has already visited the site
-    const hasVisited = localStorage.getItem('hasVisitedDaringDifferent');
+    const hasVisited = localStorage.getItem("hasVisitedDaringDifferent");
 
     if (hasVisited) {
       // Skip loading animation if user has already visited
@@ -245,21 +259,20 @@ const Home = () => {
       setTimeout(() => {
         setLoading(false);
         // Set flag in localStorage to remember this user has visited
-        localStorage.setItem('hasVisitedDaringDifferent', 'true');
+        localStorage.setItem("hasVisitedDaringDifferent", "true");
       }, 5200);
     }
-
 
     // Fetch episodes from Supabase on mount
     const fetchEpisodes = async () => {
       const { data, error } = await supabase
-        .from('podcast_episodes')
-        .select('*')
-        .order('published_at', { ascending: false })
+        .from("podcast_episodes")
+        .select("*")
+        .order("published_at", { ascending: false })
         .limit(3); // Only fetch 3 recent episodes for the homepage
 
       if (error) {
-        console.error('Error fetching episodes:', error);
+        console.error("Error fetching episodes:", error);
       } else {
         setEpisodes(data || []);
       }
@@ -274,15 +287,15 @@ const Home = () => {
     e.preventDefault();
     // Insert the email into the "mailing_list" table in Supabase
     const { error } = await supabase
-      .from('mailing_list')
+      .from("mailing_list")
       .insert([{ email, name }]);
     if (error) {
-      console.error('Error adding email to mailing list:', error);
+      console.error("Error adding email to mailing list:", error);
       // Optionally, handle the error (e.g., show an error message to the user)
     } else {
       setSubscribed(true);
-      setEmail('');
-      setName('');
+      setEmail("");
+      setName("");
       setTimeout(() => setSubscribed(false), 3000);
     }
   };
@@ -290,48 +303,48 @@ const Home = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     const { error } = await supabase
-      .from('contact_messages')
+      .from("contact_messages")
       .insert([{ first_name: firstName, last_name: lastName, email, message }]);
     if (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
       // Optionally, display an error to the user
     } else {
       // Clear the input fields
-      setFirstName('');
-      setLastName('');
-      setEmail('');
-      setMessage('');
-      setTimeout(() => setContactSent(false), 3000)
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setMessage("");
+      setTimeout(() => setContactSent(false), 3000);
     }
   };
-
-
 
   // Testimonials carousel logic
   const testimonials = [
     {
-      name: 'Stefan Danquah',
-      role: 'Podcast Listener',
+      name: "Stefan Danquah",
+      role: "Podcast Listener",
       quote:
         '"Listening to Ciara has opened my eyes to new perspectives. Her authenticity and warmth shine through every episode. I find myself eagerly awaiting each new release!"',
       image:
-        'https://images.unsplash.com/photo-1570158268183-d296b2892211?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        "https://images.unsplash.com/photo-1570158268183-d296b2892211?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     },
     {
-      name: 'Ruthie Bomochie Armah',
-      role: 'Podcast Listener',
+      name: "Ruthie Bomochie Armah",
+      role: "Podcast Listener",
       quote:
         '"Ciara demonstrates courage in speaking up for disability awareness. I always look forward to her next conversation. The way she navigates complex topics with sensitivity and insight is remarkable."',
       image:
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    }
+        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    },
   ];
 
   // Page for testimonials
   const paginate = (newDirection) => {
     const newPage = page + newDirection;
     // Wrap around to first or last page if needed
-    const wrappedPage = ((newPage % testimonials.length) + testimonials.length) % testimonials.length;
+    const wrappedPage =
+      ((newPage % testimonials.length) + testimonials.length) %
+      testimonials.length;
     setPage([wrappedPage, newDirection]);
   };
 
@@ -348,8 +361,16 @@ const Home = () => {
 
   // Scroll triggered animations
   const headerOpacity = useTransform(smoothScrollProgress, [0, 0.05], [1, 0]);
-  const experienceScale = useTransform(smoothScrollProgress, [0.1, 0.2], [0.8, 1]);
-  const experienceOpacity = useTransform(smoothScrollProgress, [0.1, 0.2], [0, 1]);
+  const experienceScale = useTransform(
+    smoothScrollProgress,
+    [0.1, 0.2],
+    [0.8, 1]
+  );
+  const experienceOpacity = useTransform(
+    smoothScrollProgress,
+    [0.1, 0.2],
+    [0, 1]
+  );
 
   // Loading screen with advanced animations
   if (loading) {
@@ -434,16 +455,26 @@ const Home = () => {
                     boxShadow: [
                       "0 0 5px 2px rgba(255,158,27,0.5)",
                       "0 0 10px 4px rgba(255,158,27,0.8)",
-                      "0 0 5px 2px rgba(255,158,27,0.5)"
+                      "0 0 5px 2px rgba(255,158,27,0.5)",
                     ],
-                    backgroundPosition: ["0% 0%", "100% 0%", "0% 0%"]
+                    backgroundPosition: ["0% 0%", "100% 0%", "0% 0%"],
                   }}
-                  transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 15,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                 />
 
                 {/* Decorative shapes */}
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-                  <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 1440 400" className="absolute inset-0 opacity-20">
+                  <svg
+                    width="100%"
+                    height="100%"
+                    preserveAspectRatio="none"
+                    viewBox="0 0 1440 400"
+                    className="absolute inset-0 opacity-20"
+                  >
                     <motion.path
                       d="M0,128L48,144C96,160,192,192,288,202.7C384,213,480,203,576,181.3C672,160,768,128,864,128C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
                       fill="#FFFFFF"
@@ -451,10 +482,15 @@ const Home = () => {
                       animate={{
                         d: [
                           "M0,128L48,144C96,160,192,192,288,202.7C384,213,480,203,576,181.3C672,160,768,128,864,128C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z",
-                          "M0,96L48,122.7C96,149,192,203,288,213.3C384,224,480,192,576,176C672,160,768,160,864,186.7C960,213,1056,267,1152,266.7C1248,267,1344,213,1392,186.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-                        ]
+                          "M0,96L48,122.7C96,149,192,203,288,213.3C384,224,480,192,576,176C672,160,768,160,864,186.7C960,213,1056,267,1152,266.7C1248,267,1344,213,1392,186.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z",
+                        ],
                       }}
-                      transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+                      transition={{
+                        duration: 10,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                        ease: "easeInOut",
+                      }}
                     />
                   </svg>
                 </div>
@@ -483,7 +519,7 @@ const Home = () => {
                   "0 0 0 0 rgba(255,158,27,0)",
                   "0 0 0 10px rgba(255,158,27,0.1)",
                   "0 0 0 20px rgba(255,158,27,0)",
-                ]
+                ],
               }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
             />
@@ -501,7 +537,6 @@ const Home = () => {
       </motion.div>
     );
   }
-
 
   // Main home content after loading
   return (
@@ -526,10 +561,16 @@ const Home = () => {
             className="absolute inset-0 opacity-30"
             initial={{ backgroundPosition: "0% 0%" }}
             animate={{ backgroundPosition: "100% 100%" }}
-            transition={{ duration: 20, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "linear",
+            }}
             style={{
               backgroundSize: "200% 200%",
-              backgroundImage: "radial-gradient(circle at 30% 70%, rgba(0,178,169,0.4) 0%, rgba(10,34,64,0) 50%), radial-gradient(circle at 80% 20%, rgba(255,158,27,0.4) 0%, rgba(10,34,64,0) 50%)"
+              backgroundImage:
+                "radial-gradient(circle at 30% 70%, rgba(0,178,169,0.4) 0%, rgba(10,34,64,0) 50%), radial-gradient(circle at 80% 20%, rgba(255,158,27,0.4) 0%, rgba(10,34,64,0) 50%)",
             }}
           />
 
@@ -549,16 +590,16 @@ const Home = () => {
                 initial={{
                   x: Math.random() * 100 + "%",
                   y: Math.random() * 100 + "%",
-                  opacity: Math.random() * 0.5 + 0.3
+                  opacity: Math.random() * 0.5 + 0.3,
                 }}
                 animate={{
                   y: ["-10%", "110%"],
-                  opacity: [0, 1, 0.5, 0]
+                  opacity: [0, 1, 0.5, 0],
                 }}
                 transition={{
                   duration: Math.random() * 20 + 15,
                   repeat: Infinity,
-                  delay: Math.random() * 10
+                  delay: Math.random() * 10,
                 }}
               />
             ))}
@@ -604,7 +645,9 @@ const Home = () => {
                   />
                 </div>{" "}
                 <span className="text-white">Different</span>
-                <div className="text-3xl md:text-4xl mt-2 text-white/90 font-light">with Ciara</div>
+                <div className="text-3xl md:text-4xl mt-2 text-white/90 font-light">
+                  with Ciara
+                </div>
               </motion.h1>
 
               <motion.p
@@ -613,7 +656,9 @@ const Home = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5, duration: 0.8 }}
               >
-                Join us on an inspiring journey of breaking barriers and empowering voices through powerful stories and authentic conversations that challenge perceptions.
+                Join us on an inspiring journey of breaking barriers and
+                empowering voices through powerful stories and authentic
+                conversations that challenge perceptions.
               </motion.p>
 
               <motion.div
@@ -624,17 +669,14 @@ const Home = () => {
               >
                 {/* Start Listening Button */}
                 <Link to="/podcast">
-                  <motion.div
-                    className="group relative"
-                    whileHover="hover"
-                  >
+                  <motion.div className="group relative" whileHover="hover">
                     <motion.div
                       className="absolute inset-0 rounded-full bg-[#FF9E1B] blur-md group-hover:blur-xl transition-all duration-300"
                       variants={{
                         hover: {
                           scale: 1.1,
-                          opacity: 0.7
-                        }
+                          opacity: 0.7,
+                        },
                       }}
                     />
                     <motion.button
@@ -652,7 +694,10 @@ const Home = () => {
                 {/* Learn More Button */}
                 <Link to="/about">
                   <motion.button
-                    whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(255,255,255,0.2)" }}
+                    whileHover={{
+                      scale: 1.05,
+                      boxShadow: "0 0 20px rgba(255,255,255,0.2)",
+                    }}
                     whileTap={{ scale: 0.98 }}
                     className="px-8 py-4 font-bold text-white border-2 border-white/30 rounded-full
                               flex items-center gap-2 backdrop-blur-md bg-white/5
@@ -674,7 +719,10 @@ const Home = () => {
                 <div className="flex items-center gap-2">
                   <div className="flex -space-x-2">
                     {[1, 2, 3, 4].map((i) => (
-                      <div key={i} className="w-10 h-10 rounded-full border-2 border-[#0A2240] overflow-hidden">
+                      <div
+                        key={i}
+                        className="w-10 h-10 rounded-full border-2 border-[#0A2240] overflow-hidden"
+                      >
                         <img
                           src={`https://i.pravatar.cc/100?img=${i + 10}`}
                           alt="Listener"
@@ -683,9 +731,7 @@ const Home = () => {
                       </div>
                     ))}
                   </div>
-
                 </div>
-
               </motion.div>
             </motion.div>
 
@@ -704,9 +750,13 @@ const Home = () => {
                   animate={{
                     y: [0, -20, 0],
                     rotate: [0, 10, 0],
-                    scale: [1, 1.1, 1]
+                    scale: [1, 1.1, 1],
                   }}
-                  transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 10,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                 />
 
                 <motion.div
@@ -714,16 +764,24 @@ const Home = () => {
                   animate={{
                     y: [0, 20, 0],
                     rotate: [0, -10, 0],
-                    scale: [1, 1.05, 1]
+                    scale: [1, 1.05, 1],
                   }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                 />
 
                 {/* Main image container */}
                 <motion.div
                   className="relative rounded-3xl overflow-hidden transform rotateY-3 hover:rotateY-0 transition-all duration-700"
                   animate={{ rotateY: [-5, 5, -5] }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 20,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                   style={{ transformStyle: "preserve-3d" }}
                 >
                   {/* Image */}
@@ -738,15 +796,13 @@ const Home = () => {
 
                     {/* Floating dynamic elements */}
 
-
                     {/* Statistics overlay */}
                     <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-[#0A2240] to-transparent z-20">
-                      <div className="text-white font-bold text-xl mb-2">Daring Different Podcast</div>
+                      <div className="text-white font-bold text-xl mb-2">
+                        Daring Different Podcast
+                      </div>
                       <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-4">
-
-
-                        </div>
+                        <div className="flex items-center gap-4"></div>
                         <motion.div
                           className="w-10 h-10 flex items-center justify-center rounded-full bg-[#FF9E1B]"
                           whileHover={{ scale: 1.1 }}
@@ -765,7 +821,11 @@ const Home = () => {
                     opacity: [0.4, 0.6, 0.4],
                     rotate: [0, 2, 0, -2, 0],
                   }}
-                  transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                 />
 
                 {/* Available on platforms badges */}
@@ -775,10 +835,10 @@ const Home = () => {
                   animate={{ opacity: 1, y: 0, rotate: 5 }}
                   transition={{ delay: 1, duration: 0.8 }}
                 >
-                  <div className="text-white/80 text-xs mb-2 font-medium">Available on:</div>
+                  <div className="text-white/80 text-xs mb-2 font-medium">
+                    Available on:
+                  </div>
                   <div className="flex gap-3">
-
-
                     <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                       <Youtube className="w-4 h-4 text-white" />
                     </div>
@@ -793,22 +853,20 @@ const Home = () => {
         <motion.div
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
           animate={{ y: [0, 12, 0], opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
           <div className="w-10 h-16 border-2 border-white/30 rounded-full flex justify-center">
             <motion.div
               className="w-2 h-2 bg-white rounded-full mt-2"
               animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             />
           </div>
         </motion.div>
       </motion.section>
 
       {/* 2. FEATURED EPISODES SECTION WITH DIAGONAL LAYOUT */}
-      <motion.section
-        className="py-32 relative overflow-hidden"
-      >
+      <motion.section className="py-32 relative overflow-hidden">
         {/* Diagonal background sections */}
         <div className="absolute inset-0 -skew-y-3 bg-white/50 -translate-y-32 z-0" />
         <div className="absolute inset-0 bg-gradient-to-br from-[#F7F9FC] to-white z-0" />
@@ -846,13 +904,14 @@ const Home = () => {
               <motion.div
                 className="absolute -bottom-2 left-0 w-full h-2 bg-[#FF9E1B] rounded-full"
                 initial={{ width: 0 }}
-                whileInView={{ width: '100%' }}
+                whileInView={{ width: "100%" }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.5, duration: 0.6 }}
               />
             </h2>
             <p className="text-xl text-[#0A2240]/70 max-w-2xl mx-auto mt-4">
-              Join Ciara for inspiring conversations that challenge perceptions and celebrate diversity.
+              Join Ciara for inspiring conversations that challenge perceptions
+              and celebrate diversity.
             </p>
           </motion.div>
 
@@ -880,14 +939,19 @@ const Home = () => {
                   className="relative group"
                 >
                   {/* Card with glass morphism */}
-                  <div className="bg-white rounded-3xl overflow-hidden shadow-xl transition-all duration-500
+                  <div
+                    className="bg-white rounded-3xl overflow-hidden shadow-xl transition-all duration-500
                               group-hover:shadow-2xl transform perspective-[1000px] h-full
-                              border border-white">
+                              border border-white"
+                  >
                     <div className="relative h-56 overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0A2240] to-transparent opacity-60 z-10" />
 
                       <img
-                        src={episode.cover_image || "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"}
+                        src={
+                          episode.cover_image ||
+                          "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        }
                         alt={episode.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
@@ -902,7 +966,7 @@ const Home = () => {
                             className="absolute inset-0 bg-[#FF9E1B] rounded-full blur-md"
                             animate={{
                               scale: [1, 1.1, 1],
-                              opacity: [0.5, 0.8, 0.5]
+                              opacity: [0.5, 0.8, 0.5],
                             }}
                             transition={{ duration: 2, repeat: Infinity }}
                           />
@@ -927,11 +991,14 @@ const Home = () => {
                         </div>
 
                         <div className="bg-black/30 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full">
-                          {new Date(episode.published_at).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
+                          {new Date(episode.published_at).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            }
+                          )}
                         </div>
                       </div>
                     </div>
@@ -956,11 +1023,20 @@ const Home = () => {
                       </p>
 
                       <div className="flex justify-between items-center">
-                        <Link to="/videos" state={{ episode }} className="inline-flex items-center text-[#FF9E1B] font-semibold group">
+                        <Link
+                          to="/videos"
+                          state={{ episode }}
+                          className="inline-flex items-center text-[#FF9E1B] font-semibold group"
+                        >
                           <span>Listen Now</span>
                           <motion.div
                             animate={{ x: [0, 4, 0] }}
-                            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", repeatDelay: 0.5 }}
+                            transition={{
+                              duration: 1.5,
+                              repeat: Infinity,
+                              ease: "easeInOut",
+                              repeatDelay: 0.5,
+                            }}
                           >
                             <ArrowRight className="w-4 h-4 ml-1" />
                           </motion.div>
@@ -989,7 +1065,6 @@ const Home = () => {
                     viewport={{ once: true }}
                   >
                     <Users className="w-4 h-4 text-[#0A2240]" />
-
                   </motion.div>
                 </motion.div>
               ))}
@@ -1015,7 +1090,7 @@ const Home = () => {
                 <motion.div
                   className="absolute inset-0 rounded-full bg-[#0A2240] blur-md opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
                   variants={{
-                    hover: { scale: 1.1 }
+                    hover: { scale: 1.1 },
                   }}
                 />
                 <motion.button
@@ -1027,7 +1102,11 @@ const Home = () => {
                   <span>View All Episodes</span>
                   <motion.div
                     animate={{ x: [0, 4, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5 }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      repeatDelay: 0.5,
+                    }}
                   >
                     <ArrowRight className="w-5 h-5" />
                   </motion.div>
@@ -1050,14 +1129,23 @@ const Home = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-[#0A2240] to-[#061830] overflow-hidden">
           {/* Diagonal decorative element */}
           <div className="absolute inset-0 overflow-hidden">
-            <svg viewBox="0 0 1000 1000" preserveAspectRatio="none" className="absolute h-full w-full">
+            <svg
+              viewBox="0 0 1000 1000"
+              preserveAspectRatio="none"
+              className="absolute h-full w-full"
+            >
               <motion.path
                 d="M0,100 L1000,500 L1000,1000 L0,1000 Z"
                 fill="#FF9E1B"
                 fillOpacity="0.05"
                 initial={{ d: "M0,120 L1000,500 L1000,1000 L0,1000 Z" }}
                 animate={{ d: "M0,100 L1000,480 L1000,1000 L0,1000 Z" }}
-                transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+                transition={{
+                  duration: 10,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "easeInOut",
+                }}
               />
               <motion.path
                 d="M0,150 L1000,650 L1000,1000 L0,1000 Z"
@@ -1065,7 +1153,12 @@ const Home = () => {
                 fillOpacity="0.05"
                 initial={{ d: "M0,170 L1000,650 L1000,1000 L0,1000 Z" }}
                 animate={{ d: "M0,130 L1000,630 L1000,1000 L0,1000 Z" }}
-                transition={{ duration: 8, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+                transition={{
+                  duration: 8,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  ease: "easeInOut",
+                }}
               />
             </svg>
           </div>
@@ -1098,10 +1191,14 @@ const Home = () => {
                     boxShadow: [
                       "0 0 20px rgba(255,158,27,0.5)",
                       "0 0 40px rgba(0,178,169,0.5)",
-                      "0 0 20px rgba(255,158,27,0.5)"
-                    ]
+                      "0 0 20px rgba(255,158,27,0.5)",
+                    ],
                   }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                 />
 
                 {/* Video container */}
@@ -1122,8 +1219,12 @@ const Home = () => {
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="text-white font-bold">Official Trailer</h3>
-                        <p className="text-white/70 text-sm">Experience the passion behind Daring Different</p>
+                        <h3 className="text-white font-bold">
+                          Official Trailer
+                        </h3>
+                        <p className="text-white/70 text-sm">
+                          Experience the passion behind Daring Different
+                        </p>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="px-3 py-1 bg-[#FF9E1B] text-[#0A2240] rounded-full text-xs font-bold">
@@ -1145,12 +1246,20 @@ const Home = () => {
                 <motion.div
                   className="absolute -top-5 -left-5 w-10 h-10 rounded-full bg-[#FF9E1B]"
                   animate={{ y: [0, -10, 0], x: [0, -10, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                 />
                 <motion.div
                   className="absolute -bottom-5 -right-5 w-10 h-10 rounded-full bg-[#00B2A9]"
                   animate={{ y: [0, 10, 0], x: [0, 10, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                 />
               </div>
 
@@ -1204,22 +1313,32 @@ const Home = () => {
                 <motion.div
                   className="absolute -bottom-2 left-0 w-full h-2 bg-[#FF9E1B] rounded-full"
                   initial={{ width: 0 }}
-                  whileInView={{ width: '100%' }}
+                  whileInView={{ width: "100%" }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.6, duration: 0.6 }}
                 />
               </h2>
 
               <p className="text-xl text-white/80 mb-8 leading-relaxed">
-                Experience powerful stories and authentic conversations that inspire and challenge perceptions.
+                Experience powerful stories and authentic conversations that
+                inspire and challenge perceptions.
               </p>
 
               <div className="space-y-6 mb-10">
                 {/* Feature points with animated checkmarks */}
                 {[
-                  { text: "Personal stories that inspire and motivate", icon: <Users className="w-5 h-5 text-[#FF9E1B]" /> },
-                  { text: "Conversations about disability awareness and inclusion", icon: <Heart className="w-5 h-5 text-[#FF9E1B]" /> },
-                  { text: "Breaking barriers and challenging stereotypes", icon: <Sparkles className="w-5 h-5 text-[#FF9E1B]" /> }
+                  {
+                    text: "Personal stories that inspire and motivate",
+                    icon: <Users className="w-5 h-5 text-[#FF9E1B]" />,
+                  },
+                  {
+                    text: "Conversations about disability awareness and inclusion",
+                    icon: <Heart className="w-5 h-5 text-[#FF9E1B]" />,
+                  },
+                  {
+                    text: "Breaking barriers and challenging stereotypes",
+                    icon: <Sparkles className="w-5 h-5 text-[#FF9E1B]" />,
+                  },
                 ].map((item, i) => (
                   <motion.div
                     key={i}
@@ -1227,11 +1346,9 @@ const Home = () => {
                     initial={{ opacity: 0, x: -20 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: 0.8 + (i * 0.2), duration: 0.5 }}
+                    transition={{ delay: 0.8 + i * 0.2, duration: 0.5 }}
                   >
-                    <div className="mt-0.5 flex-shrink-0">
-                      {item.icon}
-                    </div>
+                    <div className="mt-0.5 flex-shrink-0">{item.icon}</div>
                     <p>{item.text}</p>
                   </motion.div>
                 ))}
@@ -1244,14 +1361,11 @@ const Home = () => {
                 viewport={{ once: true }}
                 transition={{ delay: 1.4, duration: 0.5 }}
               >
-                <motion.div
-                  className="group relative"
-                  whileHover="hover"
-                >
+                <motion.div className="group relative" whileHover="hover">
                   <motion.div
                     className="absolute inset-0 rounded-full bg-[#FF9E1B] blur-md opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
                     variants={{
-                      hover: { scale: 1.1 }
+                      hover: { scale: 1.1 },
                     }}
                   />
                   <motion.button
@@ -1266,7 +1380,10 @@ const Home = () => {
                 </motion.div>
 
                 <motion.button
-                  whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(255,255,255,0.2)" }}
+                  whileHover={{
+                    scale: 1.05,
+                    boxShadow: "0 0 20px rgba(255,255,255,0.2)",
+                  }}
                   whileTap={{ scale: 0.98 }}
                   className="px-8 py-4 font-bold text-white border-2 border-white/30 rounded-full
                             flex items-center gap-2 backdrop-blur-sm bg-white/5
@@ -1322,13 +1439,14 @@ const Home = () => {
               <motion.div
                 className="absolute -bottom-2 left-0 w-full h-2 bg-[#FF9E1B] rounded-full"
                 initial={{ width: 0 }}
-                whileInView={{ width: '100%' }}
+                whileInView={{ width: "100%" }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.5, duration: 0.6 }}
               />
             </h2>
             <p className="text-xl text-[#0A2240]/70 max-w-2xl mx-auto mt-4">
-              Explore what Daring Different brings to your life with our inclusive content and empowering resources.
+              Explore what Daring Different brings to your life with our
+              inclusive content and empowering resources.
             </p>
           </motion.div>
 
@@ -1343,30 +1461,45 @@ const Home = () => {
               {
                 icon: <Headphones className="w-12 h-12 text-white" />,
                 title: "Podcast Episodes",
-                description: "Listen to inspiring conversations that challenge perceptions and celebrate diversity through authentic storytelling.",
+                description:
+                  "Listen to inspiring conversations that challenge perceptions and celebrate diversity through authentic storytelling.",
                 color: "#FF9E1B",
                 gradient: "linear-gradient(135deg, #FF9E1B 0%, #FFBE5C 100%)",
                 link: "/podcast",
-                features: ["Weekly new episodes", "In-depth interviews", "Diverse perspectives"]
+                features: [
+                  "Weekly new episodes",
+                  "In-depth interviews",
+                  "Diverse perspectives",
+                ],
               },
               {
                 icon: <BookOpen className="w-12 h-12 text-white" />,
                 title: "Books by Ciara",
-                description: "Discover Ciara's collection of books sharing her journey, insights and wisdom gathered throughout her experiences.",
+                description:
+                  "Discover Ciara's collection of books sharing her journey, insights and wisdom gathered throughout her experiences.",
                 color: "#00B2A9",
                 gradient: "linear-gradient(135deg, #00B2A9 0%, #3FD5CC 100%)",
                 link: "/books",
-                features: ["Personal stories", "Practical guidance", "Inspirational content"]
+                features: [
+                  "Personal stories",
+                  "Practical guidance",
+                  "Inspirational content",
+                ],
               },
               {
                 icon: <Heart className="w-12 h-12 text-white" />,
                 title: "Support Our Mission",
-                description: "Join our community and help us amplify diverse voices and stories that deserve to be heard around the world.",
+                description:
+                  "Join our community and help us amplify diverse voices and stories that deserve to be heard around the world.",
                 color: "#F15A5A",
                 gradient: "linear-gradient(135deg, #F15A5A 0%, #F48B8B 100%)",
                 link: "/donate",
-                features: ["Community events", "Support programs", "Awareness campaigns"]
-              }
+                features: [
+                  "Community events",
+                  "Support programs",
+                  "Awareness campaigns",
+                ],
+              },
             ].map((feature, index) => (
               <motion.div
                 key={index}
@@ -1391,7 +1524,13 @@ const Home = () => {
                   >
                     {/* Layered background patterns for depth */}
                     <div className="absolute inset-0 overflow-hidden">
-                      <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 opacity-10">
+                      <svg
+                        width="100%"
+                        height="100%"
+                        viewBox="0 0 100 100"
+                        preserveAspectRatio="none"
+                        className="absolute inset-0 opacity-10"
+                      >
                         <path d="M0,0 L100,0 L100,100 Z" fill="#FFFFFF" />
                       </svg>
                       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRoMnYyaC0yek00MCAzNGgydjJoLTJ6TTQ0IDM0aDJ2MmgtMnpNMzQgMzBoMnYyaC0yek0zNCAyNmgydjJoLTJ6TTM0IDIyaDJ2MmgtMnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30" />
@@ -1406,20 +1545,28 @@ const Home = () => {
                             "0 0 0 0 rgba(255,255,255,0)",
                             "0 0 0 10px rgba(255,255,255,0.1)",
                             "0 0 0 20px rgba(255,255,255,0)",
-                          ]
+                          ],
                         }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeOut",
+                        }}
                       >
                         {feature.icon}
                       </motion.div>
 
-                      <h3 className="text-2xl font-bold text-white relative z-10">{feature.title}</h3>
+                      <h3 className="text-2xl font-bold text-white relative z-10">
+                        {feature.title}
+                      </h3>
                     </div>
                   </div>
 
                   {/* Content section */}
                   <div className="px-8 py-8 flex flex-col h-full">
-                    <p className="text-[#0A2240]/70 mb-6">{feature.description}</p>
+                    <p className="text-[#0A2240]/70 mb-6">
+                      {feature.description}
+                    </p>
 
                     {/* Feature list */}
                     <div className="space-y-3 mb-6">
@@ -1498,13 +1645,14 @@ const Home = () => {
               <motion.div
                 className="absolute -bottom-2 left-0 w-full h-2 bg-[#FF9E1B] rounded-full"
                 initial={{ width: 0 }}
-                whileInView={{ width: '100%' }}
+                whileInView={{ width: "100%" }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.5, duration: 0.6 }}
               />
             </h2>
             <p className="text-xl text-white/80 max-w-2xl mx-auto mt-4">
-              Hear from our community who have been inspired by Ciara's journey and podcast.
+              Hear from our community who have been inspired by Ciara's journey
+              and podcast.
             </p>
           </motion.div>
 
@@ -1541,7 +1689,11 @@ const Home = () => {
                         {/* Content section */}
                         <div className="col-span-8 p-8 md:p-12 flex flex-col justify-center">
                           {/* Quote icon */}
-                          <svg className="w-12 h-12 text-[#FF9E1B]/30 mb-6" fill="currentColor" viewBox="0 0 24 24">
+                          <svg
+                            className="w-12 h-12 text-[#FF9E1B]/30 mb-6"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
                             <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                           </svg>
 
@@ -1568,7 +1720,10 @@ const Home = () => {
                               {/* Star rating */}
                               <div className="ml-auto flex">
                                 {[1, 2, 3, 4, 5].map((star) => (
-                                  <Star key={star} className="w-5 h-5 text-[#FF9E1B]" />
+                                  <Star
+                                    key={star}
+                                    className="w-5 h-5 text-[#FF9E1B]"
+                                  />
                                 ))}
                               </div>
                             </div>
@@ -1585,7 +1740,10 @@ const Home = () => {
             <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 flex justify-between pointer-events-none px-4 z-20">
               <motion.button
                 className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md text-white flex items-center justify-center pointer-events-auto border border-white/20 shadow-lg"
-                whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.2)" }}
+                whileHover={{
+                  scale: 1.1,
+                  backgroundColor: "rgba(255,255,255,0.2)",
+                }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => paginate(-1)}
               >
@@ -1594,7 +1752,10 @@ const Home = () => {
 
               <motion.button
                 className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md text-white flex items-center justify-center pointer-events-auto border border-white/20 shadow-lg"
-                whileHover={{ scale: 1.1, backgroundColor: "rgba(255,255,255,0.2)" }}
+                whileHover={{
+                  scale: 1.1,
+                  backgroundColor: "rgba(255,255,255,0.2)",
+                }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => paginate(1)}
               >
@@ -1612,7 +1773,11 @@ const Home = () => {
                 >
                   <motion.div
                     className={`w-3 h-3 rounded-full transition-all duration-300 relative
-                                ${i === page ? 'bg-[#FF9E1B] scale-125' : 'bg-white/30 hover:bg-white/50'}`}
+                                ${
+                                  i === page
+                                    ? "bg-[#FF9E1B] scale-125"
+                                    : "bg-white/30 hover:bg-white/50"
+                                }`}
                     whileHover={{ scale: 1.5 }}
                   />
                 </button>
@@ -1656,16 +1821,26 @@ const Home = () => {
                     background: [
                       "radial-gradient(circle at 20% 50%, rgba(255,158,27,0.4) 0%, rgba(10,34,64,0) 50%)",
                       "radial-gradient(circle at 80% 50%, rgba(255,158,27,0.4) 0%, rgba(10,34,64,0) 50%)",
-                      "radial-gradient(circle at 20% 50%, rgba(255,158,27,0.4) 0%, rgba(10,34,64,0) 50%)"
+                      "radial-gradient(circle at 20% 50%, rgba(255,158,27,0.4) 0%, rgba(10,34,64,0) 50%)",
                     ],
-                    backgroundPosition: ["0% 0%", "100% 0%", "0% 0%"]
+                    backgroundPosition: ["0% 0%", "100% 0%", "0% 0%"],
                   }}
-                  transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{
+                    duration: 15,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
                 />
 
                 {/* Decorative shapes */}
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-                  <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 1440 400" className="absolute inset-0 opacity-20">
+                  <svg
+                    width="100%"
+                    height="100%"
+                    preserveAspectRatio="none"
+                    viewBox="0 0 1440 400"
+                    className="absolute inset-0 opacity-20"
+                  >
                     <motion.path
                       d="M0,128L48,144C96,160,192,192,288,202.7C384,213,480,203,576,181.3C672,160,768,128,864,128C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
                       fill="#FFFFFF"
@@ -1673,10 +1848,15 @@ const Home = () => {
                       animate={{
                         d: [
                           "M0,128L48,144C96,160,192,192,288,202.7C384,213,480,203,576,181.3C672,160,768,128,864,128C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z",
-                          "M0,96L48,122.7C96,149,192,203,288,213.3C384,224,480,192,576,176C672,160,768,160,864,186.7C960,213,1056,267,1152,266.7C1248,267,1344,213,1392,186.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-                        ]
+                          "M0,96L48,122.7C96,149,192,203,288,213.3C384,224,480,192,576,176C672,160,768,160,864,186.7C960,213,1056,267,1152,266.7C1248,267,1344,213,1392,186.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z",
+                        ],
                       }}
-                      transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+                      transition={{
+                        duration: 10,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                        ease: "easeInOut",
+                      }}
                     />
                   </svg>
                 </div>
@@ -1710,20 +1890,35 @@ const Home = () => {
                     </motion.div>
 
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
-                      Stay Updated with <span className="text-[#FF9E1B]">Daring Different</span>
+                      Stay Updated with{" "}
+                      <span className="text-[#FF9E1B]">Daring Different</span>
                     </h2>
 
                     <p className="text-lg text-white/80 mb-8">
-                      Subscribe to our newsletter to get notified about new episodes, exclusive content, behind-the-scenes moments, and upcoming events directly in your inbox.
+                      Subscribe to our newsletter to get notified about new
+                      episodes, exclusive content, behind-the-scenes moments,
+                      and upcoming events directly in your inbox.
                     </p>
 
                     {/* Feature points */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                       {[
-                        { text: "Weekly podcast updates", icon: <Headphones className="w-4 h-4" /> },
-                        { text: "Exclusive content", icon: <Sparkles className="w-4 h-4" /> },
-                        { text: "Early access to events", icon: <Calendar className="w-4 h-4" /> },
-                        { text: "Join a supportive community", icon: <Users className="w-4 h-4" /> }
+                        {
+                          text: "Weekly podcast updates",
+                          icon: <Headphones className="w-4 h-4" />,
+                        },
+                        {
+                          text: "Exclusive content",
+                          icon: <Sparkles className="w-4 h-4" />,
+                        },
+                        {
+                          text: "Early access to events",
+                          icon: <Calendar className="w-4 h-4" />,
+                        },
+                        {
+                          text: "Join a supportive community",
+                          icon: <Users className="w-4 h-4" />,
+                        },
                       ].map((item, i) => (
                         <motion.div
                           key={i}
@@ -1731,7 +1926,7 @@ const Home = () => {
                           initial={{ opacity: 0, x: -20 }}
                           whileInView={{ opacity: 1, x: 0 }}
                           viewport={{ once: true }}
-                          transition={{ delay: 0.6 + (i * 0.1), duration: 0.5 }}
+                          transition={{ delay: 0.6 + i * 0.1, duration: 0.5 }}
                         >
                           <div className="w-6 h-6 rounded-full bg-[#FF9E1B]/20 flex items-center justify-center flex-shrink-0">
                             {item.icon}
@@ -1751,7 +1946,10 @@ const Home = () => {
                     >
                       <span className="flex -space-x-2">
                         {[1, 2, 3].map((i) => (
-                          <div key={i} className="w-6 h-6 rounded-full border border-white/20 overflow-hidden">
+                          <div
+                            key={i}
+                            className="w-6 h-6 rounded-full border border-white/20 overflow-hidden"
+                          >
                             <img
                               src={`https://i.pravatar.cc/100?img=${i + 20}`}
                               alt="Subscriber"
@@ -1760,7 +1958,6 @@ const Home = () => {
                           </div>
                         ))}
                       </span>
-
                     </motion.div>
                   </motion.div>
 
@@ -1775,7 +1972,10 @@ const Home = () => {
                     <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-xl">
                       <form onSubmit={handleSubscribe} className="space-y-4">
                         <div>
-                          <label htmlFor="email" className="block text-white text-sm font-medium mb-2">
+                          <label
+                            htmlFor="email"
+                            className="block text-white text-sm font-medium mb-2"
+                          >
                             Email Address
                           </label>
                           <div className="relative">
@@ -1795,7 +1995,10 @@ const Home = () => {
                         </div>
 
                         <div>
-                          <label htmlFor="name" className="block text-white text-sm font-medium mb-2">
+                          <label
+                            htmlFor="name"
+                            className="block text-white text-sm font-medium mb-2"
+                          >
                             Your Name (Optional)
                           </label>
                           <input
@@ -1818,7 +2021,7 @@ const Home = () => {
                             <motion.div
                               className="absolute inset-0 rounded-lg bg-[#FF9E1B] blur-md opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300"
                               variants={{
-                                hover: { scale: 1.05 }
+                                hover: { scale: 1.05 },
                               }}
                             />
                             <motion.button
@@ -1842,12 +2045,16 @@ const Home = () => {
                           animate={{ opacity: 1, y: 0 }}
                           className="mt-4 text-[#FF9E1B] font-semibold text-center"
                         >
-                          Thank you for subscribing! You're now part of our community.
+                          Thank you for subscribing! You're now part of our
+                          community.
                         </motion.div>
                       )}
 
                       <div className="mt-4 text-center">
-                        <span className="text-white/60 text-xs">By subscribing, you agree to our Privacy Policy and Terms of Service</span>
+                        <span className="text-white/60 text-xs">
+                          By subscribing, you agree to our Privacy Policy and
+                          Terms of Service
+                        </span>
                       </div>
                     </div>
                   </motion.div>
@@ -1894,13 +2101,14 @@ const Home = () => {
               <motion.div
                 className="absolute -bottom-2 left-0 w-full h-2 bg-[#FF9E1B] rounded-full"
                 initial={{ width: 0 }}
-                whileInView={{ width: '100%' }}
+                whileInView={{ width: "100%" }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.5, duration: 0.6 }}
               />
             </h2>
             <p className="text-xl text-[#0A2240]/70 max-w-2xl mx-auto mt-4">
-              We'd love to hear from you! Whether you have questions, feedback, or just want to connect.
+              We'd love to hear from you! Whether you have questions, feedback,
+              or just want to connect.
             </p>
           </motion.div>
 
@@ -1919,9 +2127,7 @@ const Home = () => {
                 action: "Send us an email",
                 gradient: "linear-gradient(135deg, #FF9E1B 0%, #FFBE5C 100%)",
                 delay: 0.1,
-              }
-
-
+              },
             ].map((item, index) => (
               <motion.div
                 key={index}
@@ -1936,7 +2142,10 @@ const Home = () => {
                   style={{ transformStyle: "preserve-3d" }}
                 >
                   {/* Card background with gradient */}
-                  <div className="absolute inset-0" style={{ background: item.gradient }}>
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: item.gradient }}
+                  >
                     {/* Decorative patterns */}
                     <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRoMnYyaC0yek00MCAzNGgydjJoLTJ6TTQ0IDM0aDJ2MmgtMnpNMzQgMzBoMnYyaC0yek0zNCAyNmgydjJoLTJ6TTM0IDIyaDJ2MmgtMnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-10" />
 
@@ -1947,7 +2156,11 @@ const Home = () => {
                         scale: [1, 1.2, 1],
                         opacity: [0.3, 0.5, 0.3],
                       }}
-                      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                      transition={{
+                        duration: 5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
                     />
                   </div>
 
@@ -1961,9 +2174,13 @@ const Home = () => {
                           "0 0 0 0 rgba(255,255,255,0)",
                           "0 0 0 8px rgba(255,255,255,0.1)",
                           "0 0 0 0 rgba(255,255,255,0)",
-                        ]
+                        ],
                       }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeOut",
+                      }}
                     >
                       {item.icon}
                     </motion.div>
@@ -1990,7 +2207,10 @@ const Home = () => {
                     {/* Decorative dot pattern */}
                     <div className="absolute top-4 left-4 grid grid-cols-2 gap-1 opacity-30">
                       {Array.from({ length: 9 }).map((_, i) => (
-                        <div key={i} className="w-1 h-1 rounded-full bg-white" />
+                        <div
+                          key={i}
+                          className="w-1 h-1 rounded-full bg-white"
+                        />
                       ))}
                     </div>
                   </div>
@@ -2009,9 +2229,12 @@ const Home = () => {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="p-4">
-                <h3 className="text-2xl font-bold text-[#0A2240] mb-4">Send us a Message</h3>
+                <h3 className="text-2xl font-bold text-[#0A2240] mb-4">
+                  Send us a Message
+                </h3>
                 <p className="text-[#0A2240]/70 mb-6">
-                  Have a question or want to collaborate? Fill out the form and we'll get back to you as soon as possible.
+                  Have a question or want to collaborate? Fill out the form and
+                  we'll get back to you as soon as possible.
                 </p>
 
                 <form onSubmit={handleSendMessage} className="space-y-4">
@@ -2082,7 +2305,6 @@ const Home = () => {
                       Your message has been sent successfully!
                     </motion.div>
                   )}
-
                 </form>
               </div>
 
@@ -2106,8 +2328,17 @@ const Home = () => {
       <footer className="bg-[#0A2240] text-white relative overflow-hidden">
         {/* Top wave decoration */}
         <div className="absolute top-0 left-0 w-full overflow-hidden leading-[0] rotate-180">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" className="relative block w-full h-[60px]">
-            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="#F7F9FC" fillOpacity="0.1"></path>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 1200 120"
+            preserveAspectRatio="none"
+            className="relative block w-full h-[60px]"
+          >
+            <path
+              d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+              fill="#F7F9FC"
+              fillOpacity="0.1"
+            ></path>
           </svg>
         </div>
 
@@ -2122,16 +2353,16 @@ const Home = () => {
                 style={{
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`,
-                  opacity: Math.random() * 0.5 + 0.3
+                  opacity: Math.random() * 0.5 + 0.3,
                 }}
                 animate={{
                   opacity: [0.3, 0.8, 0.3],
-                  scale: [1, 1.5, 1]
+                  scale: [1, 1.5, 1],
                 }}
                 transition={{
                   duration: Math.random() * 3 + 2,
                   repeat: Infinity,
-                  delay: Math.random() * 5
+                  delay: Math.random() * 5,
                 }}
               />
             ))}
@@ -2169,16 +2400,38 @@ const Home = () => {
                   </h2>
                 </div>
                 <p className="text-white/70 mb-8 max-w-md leading-relaxed">
-                  Join us on an inspiring journey of breaking barriers and empowering voices through powerful stories and authentic conversations that challenge perceptions.
+                  Join us on an inspiring journey of breaking barriers and
+                  empowering voices through powerful stories and authentic
+                  conversations that challenge perceptions.
                 </p>
 
                 {/* Social icons */}
                 <div className="flex space-x-4">
                   {[
-                    { icon: <Facebook className="w-5 h-5" />, url: "https://www.facebook.com/daringdifferent", label: "Facebook" },
-                    { icon: <div className="w-5 h-5"><TikTokIcon color="currentColor" /></div>, url: "https://www.tiktok.com/@daring.with.cici", label: "TikTok" },
-                    { icon: <Youtube className="w-5 h-5" />, url: "https://www.youtube.com/@DARINGDIFFERENT1", label: "YouTube" },
-                    { icon: <Instagram className="w-5 h-5" />, url: "https://www.instagram.com/daringdifferent/", label: "Instagram" }
+                    {
+                      icon: <Facebook className="w-5 h-5" />,
+                      url: "https://www.facebook.com/daringdifferent",
+                      label: "Facebook",
+                    },
+                    {
+                      icon: (
+                        <div className="w-5 h-5">
+                          <TikTokIcon color="currentColor" />
+                        </div>
+                      ),
+                      url: "https://www.tiktok.com/@daring.with.cici",
+                      label: "TikTok",
+                    },
+                    {
+                      icon: <Youtube className="w-5 h-5" />,
+                      url: "https://www.youtube.com/@DARINGDIFFERENT1",
+                      label: "YouTube",
+                    },
+                    {
+                      icon: <Instagram className="w-5 h-5" />,
+                      url: "https://www.instagram.com/daringdifferent/",
+                      label: "Instagram",
+                    },
                   ].map((social, i) => (
                     <a
                       key={i}
@@ -2197,14 +2450,16 @@ const Home = () => {
 
               {/* Quick links */}
               <div className="md:col-span-2">
-                <h3 className="text-lg font-bold mb-6 text-[#FF9E1B]">Quick Links</h3>
+                <h3 className="text-lg font-bold mb-6 text-[#FF9E1B]">
+                  Quick Links
+                </h3>
                 <ul className="space-y-3">
                   {[
                     { text: "Home", url: "/" },
                     { text: "Podcast", url: "/podcast" },
                     { text: "About", url: "/about" },
                     { text: "Books", url: "/books" },
-                    { text: "Support", url: "/donate" }
+                    { text: "Support", url: "/donate" },
                   ].map((link, i) => (
                     <li key={i}>
                       <Link
@@ -2219,11 +2474,14 @@ const Home = () => {
                 </ul>
               </div>
 
-
               {/* Newsletter */}
               <div className="md:col-span-3">
-                <h3 className="text-lg font-bold mb-6 text-[#FF9E1B]">Newsletter</h3>
-                <p className="text-white/70 mb-4">Get the latest updates and news in your inbox.</p>
+                <h3 className="text-lg font-bold mb-6 text-[#FF9E1B]">
+                  Newsletter
+                </h3>
+                <p className="text-white/70 mb-4">
+                  Get the latest updates and news in your inbox.
+                </p>
 
                 <form onSubmit={handleSubscribe} className="space-y-3">
                   <div className="relative">
@@ -2263,15 +2521,31 @@ const Home = () => {
             {/* Bottom footer */}
             <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="text-white/50 text-sm">
-                © {new Date().getFullYear()} Daring Different with Ciara. All rights reserved.
+                © {new Date().getFullYear()} Daring Different with Ciara. All
+                rights reserved.
               </div>
 
               <div className="flex gap-4 text-sm">
-                <a href="#" className="text-white/50 hover:text-white transition-colors">Privacy Policy</a>
+                <a
+                  href="#"
+                  className="text-white/50 hover:text-white transition-colors"
+                >
+                  Privacy Policy
+                </a>
                 <span className="text-white/50">•</span>
-                <a href="#" className="text-white/50 hover:text-white transition-colors">Terms of Service</a>
+                <a
+                  href="#"
+                  className="text-white/50 hover:text-white transition-colors"
+                >
+                  Terms of Service
+                </a>
                 <span className="text-white/50">•</span>
-                <a href="#" className="text-white/50 hover:text-white transition-colors">Accessibility</a>
+                <a
+                  href="#"
+                  className="text-white/50 hover:text-white transition-colors"
+                >
+                  Accessibility
+                </a>
               </div>
             </div>
           </div>
